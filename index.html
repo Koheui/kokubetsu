@@ -1,0 +1,1652 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>故 岡 浩平 儀 告別式</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --white:#e8e8e8;
+    --grey:#9a9a9a;
+    --dgrey:#5a5a5a;
+    --black:#000;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{background:#000;}
+  body{
+    background:#000;
+    color:var(--white);
+    font-family:'DotGothic16','MS Gothic',monospace;
+    image-rendering:pixelated;
+    -webkit-font-smoothing:none;
+    line-height:1.7;
+  }
+  .wrap{max-width:980px;margin:0 auto;padding:0 8px 60px;}
+
+  /* ===== シーン ===== */
+  .scene{
+    position:relative;
+    width:100%;
+    aspect-ratio:16/9;
+    background:#000;
+    overflow:hidden;
+    border:4px solid #222;
+    margin-top:12px;
+  }
+  /* シーンはすべてピクセルキャンバスに描画 */
+  .scene canvas.cv{
+    position:absolute;inset:0;
+    width:100%;height:100%;
+    display:block;
+    image-rendering:pixelated;
+  }
+  /* 式場札 */
+  .sign{
+    position:absolute;left:50%;top:11.5%;transform:translateX(-50%);
+    background:#1c1c1c;
+    border:2px solid #d8b860;
+    box-shadow:0 0 0 2px #1c1c1c;
+    padding:.6% 2.4%;
+    text-align:center;
+    z-index:6;
+  }
+  .sign .go{
+    color:#e8cc78;
+    font-size:clamp(10px,1.6vw,17px);
+    letter-spacing:.18em;
+    line-height:1.4;
+  }
+  .sign .go span{display:block;}
+  /* (花壇・パネル・スタンド花はcanvasで描画) */
+
+  /* 戒名プレート(canvasに重ねる) */
+  .kaimyo-plate{
+    position:absolute;left:50%;top:54.5%;transform:translateX(-50%);
+    font-size:clamp(6px,1.05vw,11px);
+    color:#111;
+    letter-spacing:.08em;
+    z-index:5;
+    white-space:nowrap;
+  }
+
+  /* 供花の立札(canvasに重ねる縦書き札) */
+  .kenge-tag{
+    position:absolute;top:54%;
+    transform:translateX(-50%);
+    background:#f6f2e6;
+    color:#222;
+    border:1px solid #b8b0a0;
+    padding:4px 2px;
+    font-size:clamp(6px,1vw,11px);
+    line-height:1.15;
+    height:30%;
+    overflow:hidden;
+    text-align:center;
+    z-index:4;
+    pointer-events:none;
+  }
+  .kenge-tag.pot-tag{top:56%;height:21%;}
+  .kenge-tag.mini-tag{
+    top:72%;height:17%;
+    font-size:clamp(5px,.8vw,9px);
+    padding:2px 1px;
+    line-height:1.1;
+  }
+  .grade-btn{font-size:12px;padding:6px 10px;}
+  .grade-btn.on{background:var(--white);color:#000;}
+
+  /* ===== 上映会 ===== */
+  .show-stage{width:min(780px,94vw);}
+  .show-head{
+    display:flex;justify-content:space-between;align-items:center;gap:10px;
+    margin-bottom:10px;font-size:12px;color:var(--grey);
+  }
+  .show-body{
+    aspect-ratio:16/10;
+    border:3px solid var(--white);
+    background:#000;
+    display:flex;align-items:center;justify-content:center;
+    overflow:hidden;
+  }
+  .show-body img{max-width:100%;max-height:100%;image-rendering:pixelated;}
+  .show-body iframe, .show-body video{width:100%;height:100%;border:0;}
+  .show-text{
+    font-size:clamp(14px,2.6vw,22px);
+    padding:24px;line-height:2;letter-spacing:.12em;
+    white-space:pre-wrap;text-align:center;
+  }
+  .show-nav{display:flex;justify-content:center;gap:12px;margin-top:12px;flex-wrap:wrap;}
+
+  /* ===== リズムマシン ===== */
+  .seq{display:grid;gap:6px;margin-top:12px;}
+  .seq-row{display:grid;grid-template-columns:64px repeat(16,1fr);gap:3px;align-items:center;}
+  .seq-row .lbl{font-size:12px;color:var(--grey);}
+  .step{
+    aspect-ratio:1/1;border:2px solid var(--dgrey);background:#111;
+    cursor:pointer;padding:0;min-width:0;
+  }
+  .step:hover{background:#333;color:inherit;}
+  .seq-row .step:nth-child(4n+2){border-left-color:#999;}
+  .step.on{background:#9678bc;border-color:#cbb8e0;}
+  .step.on:hover{background:#a98cc9;}
+  .step.now{box-shadow:inset 0 0 0 3px #ffd75f;}
+  /* ===== ダイアログ枠共通 ===== */
+  .box{
+    border:4px solid var(--white);
+    border-radius:2px;
+    box-shadow:0 0 0 4px #000, inset 0 0 0 2px #000;
+    background:#000;
+    padding:16px 18px;
+    margin-top:26px;
+  }
+  .box h2{
+    font-size:clamp(14px,2.4vw,20px);
+    letter-spacing:.2em;
+    border-bottom:2px dashed var(--dgrey);
+    padding-bottom:8px;
+    margin-bottom:12px;
+  }
+  .blink{animation:blink 1s steps(2) infinite;}
+  @keyframes blink{50%{opacity:0;}}
+
+  /* ステータス行 */
+  .statusline{
+    font-size:12px;
+    color:#8fbf8f;
+    margin-top:10px;
+    word-break:break-all;
+  }
+  .statusline.err{color:#cf8f8f;}
+
+  /* ===== 弔辞 ===== */
+  .choji-list{list-style:none;}
+  .choji-list li{
+    border-bottom:1px dotted var(--dgrey);
+    padding:10px 2px;
+    font-size:clamp(12px,1.9vw,15px);
+  }
+  .choji-list .meta{
+    color:var(--grey);
+    font-size:11px;
+    display:flex;gap:10px;flex-wrap:wrap;
+    margin-bottom:2px;
+  }
+  .rank-badge{
+    padding:0 6px;
+    border:1px solid currentColor;
+    font-size:10px;
+  }
+  .rank-PERFECT{color:#ffd75f;}
+  .rank-GREAT{color:#9fd7ff;}
+  .rank-GOOD{color:#b8e8b8;}
+  .rank-MISS{color:#9a9a9a;}
+
+  button, input, textarea{
+    font-family:inherit;
+    background:#000;
+    color:var(--white);
+    border:3px solid var(--white);
+    padding:8px 14px;
+    font-size:14px;
+  }
+  button{cursor:pointer;}
+  button:hover{background:var(--white);color:#000;}
+  button:disabled{border-color:var(--dgrey);color:var(--dgrey);background:#000;cursor:not-allowed;}
+  input,textarea{width:100%;margin-top:6px;}
+  input[type=range]{
+    width:110px;border:none;padding:0;margin:0 0 0 6px;
+    vertical-align:middle;
+    accent-color:#9678bc;
+  }
+  textarea{min-height:80px;resize:vertical;}
+  label{font-size:12px;color:var(--grey);display:block;margin-top:12px;}
+
+  /* ===== 焼香ゲーム ===== */
+  .overlay{
+    position:fixed;inset:0;
+    background:rgba(0,0,0,.88);
+    display:none;
+    align-items:center;justify-content:center;
+    z-index:50;
+  }
+  .overlay.show{display:flex;}
+  .game{
+    width:min(560px,92vw);
+    text-align:center;
+  }
+  .gauge{
+    position:relative;
+    height:34px;
+    border:3px solid var(--white);
+    margin:18px 0 10px;
+    background:
+      linear-gradient(90deg,
+        #3a3a3a 0 31%,
+        #4a6a4a 31% 41%,
+        #7a6a2a 41% 47%,
+        #b08a20 47% 53%,
+        #7a6a2a 53% 59%,
+        #4a6a4a 59% 69%,
+        #3a3a3a 69% 100%);
+  }
+  .needle{
+    position:absolute;top:-8px;bottom:-8px;
+    width:6px;
+    background:#fff;
+    left:0;
+  }
+  .rank-result{
+    font-size:clamp(18px,4vw,30px);
+    min-height:1.6em;
+    letter-spacing:.2em;
+  }
+  .game .hint{color:var(--grey);font-size:12px;}
+
+  /* ===== アーカイブ ===== */
+  .videos{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;}
+  .vcard{
+    border:2px solid var(--dgrey);
+    padding:10px;
+    font-size:12px;
+  }
+  .vcard .year{font-size:18px;color:#ffd75f;}
+  .vcard a{color:#9fd7ff;}
+  .vcard .none{color:var(--dgrey);}
+  .note{color:var(--grey);font-size:12px;margin-top:10px;}
+  footer{
+    text-align:center;color:var(--dgrey);font-size:11px;margin-top:40px;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- ======= 葬式シーン ======= -->
+  <div class="scene" id="scene">
+    <canvas id="scene-cv" class="cv" width="320" height="180"></canvas>
+    <div class="sign"><div class="go"><span>岡家 告別式場</span></div></div>
+    <div class="kaimyo-plate">故 岡 浩平 儀</div>
+    <div id="tags"></div>
+  </div>
+
+  <!-- ======= 弔辞受付 ======= -->
+  <div class="box">
+    <h2>▼ 弔辞受付</h2>
+    <p style="font-size:13px;">故人の遺志により葬式は行いません。かわりにここが式場です。<br>
+    なお本人はまだ存命のため、ここに書いた弔辞(という名の感謝)は<br>
+    生きているうちに本人に届きます。伝えるなら今のうちです。<br>
+    焼香してから弔辞をどうぞ。<span class="blink">▼</span></p>
+    <p style="margin-top:14px;">
+      <button id="btn-shoukou">焼香して弔辞を捧げる</button>
+    </p>
+    <form id="choji-form" style="display:none;">
+      <label>御芳名(匿名可)</label>
+      <input id="in-name" maxlength="24" placeholder="名無しの参列者">
+      <label>弔辞</label>
+      <textarea id="in-msg" maxlength="300" required placeholder="謹んで申し上げます…"></textarea>
+      <p style="margin-top:12px;"><button type="submit">弔辞を捧げる</button></p>
+    </form>
+    <div class="statusline" id="storage-status">保存先: 確認中…</div>
+  </div>
+
+  <!-- ======= 弔辞一覧 ======= -->
+  <div class="box">
+    <h2>▼ 皆さまからの弔辞 <button id="btn-reload" style="font-size:11px;padding:4px 8px;float:right;">再読込</button></h2>
+    <ul class="choji-list" id="choji-list"></ul>
+  </div>
+
+  <!-- ======= 献花 ======= -->
+  <div class="box">
+    <h2>▼ 献花</h2>
+    <p style="font-size:13px;">お名前を添えてどうぞ。式場に花が増えます。<br>
+    松はお名前の立札つきで祭壇の脇に立ちます。</p>
+    <label>花の等級</label>
+    <p style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px;">
+      <button type="button" class="grade-btn" data-g="matsu">松 — スタンド花(立札つき)</button>
+      <button type="button" class="grade-btn" data-g="take">竹 — 鉢花</button>
+      <button type="button" class="grade-btn on" data-g="ume">梅 — 花束</button>
+    </p>
+    <label>御芳名</label>
+    <input id="k-name" maxlength="24" placeholder="名無しの参列者">
+    <p style="margin-top:12px;"><button type="button" id="btn-kenka">献花する</button></p>
+    <div class="statusline" id="k-status"></div>
+    <div id="kenka-names" style="margin-top:10px;font-size:12px;color:var(--grey);word-break:break-word;"></div>
+  </div>
+
+  <!-- ======= リズムマシン ======= -->
+  <div class="box">
+    <h2>▼ 木魚と鐘 — 16ステップ供養リズムマシン</h2>
+    <p style="font-size:13px;">マスを点けてリズムを組み、お坊さんに読経してもらいましょう。<br>
+    再生中はお坊さんがリズムに乗ります。</p>
+    <div class="seq" id="seq"></div>
+    <p style="margin-top:14px;display:flex;gap:14px;align-items:center;flex-wrap:wrap;">
+      <button type="button" id="btn-play">▶ 再生</button>
+      <button type="button" id="btn-sutra">読経 ON</button>
+      <label style="margin:0;display:inline;">BPM
+        <input id="bpm" type="number" value="90" min="40" max="200" style="width:80px;margin:0 0 0 6px;">
+      </label>
+      <label style="margin:0;display:inline;">鐘ディケイ
+        <input id="dec-kane" type="range" min="0.2" max="4" step="0.1" value="2.2">
+      </label>
+      <label style="margin:0;display:inline;">木魚ディケイ
+        <input id="dec-moku" type="range" min="0.04" max="0.6" step="0.02" value="0.12">
+      </label>
+    </p>
+  </div>
+
+  <!-- ======= 生前アーカイブ ======= -->
+  <div class="box">
+    <h2>▼ 生前アーカイブ</h2>
+    <p style="font-size:13px;">本人が毎年残していく遺影・写真・ことば・メッセージ動画の保管庫。<br>
+    元気なうちに感謝を伝え、伝えられるための記録です。</p>
+    <p style="margin-top:12px;">
+      <button type="button" id="show-open">▶ 上映会をはじめる</button>
+      <span class="statusline" id="al-count" style="margin-left:10px;"></span>
+    </p>
+    <div class="videos" id="videos" style="margin-top:14px;"></div>
+    <p class="note">※ 動画はファイル冒頭の CONFIG.VIDEOS に URL を追記すると増やせます。</p>
+  </div>
+
+  <!-- ======= 日記 ======= -->
+  <div class="box">
+    <h2>▼ 本人の日記</h2>
+    <p style="font-size:13px;">本人がGitHubに書きためている日記。<br>
+    生きているうちは近況報告、死んだあとは形見になります。</p>
+    <ul class="choji-list" id="diary-list" style="margin-top:8px;"></ul>
+    <div class="statusline" id="diary-status"></div>
+  </div>
+
+  <!-- ======= 管理ダッシュボード(本人用・合言葉でアンロック) ======= -->
+  <div class="box" id="admin-box" style="display:none;">
+    <h2>▼ 管理ダッシュボード <span style="font-size:11px;color:var(--grey);">(本人用)</span></h2>
+    <div class="statusline" id="adm-stats"></div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px;margin-top:12px;">
+      <div>
+        <p style="font-size:13px;">遺影の奉納(最新の一枚が祭壇に飾られます)</p>
+        <label>年</label>
+        <input id="p-year" type="number" min="2000" max="2126" style="width:140px;">
+        <label>遺影写真</label>
+        <input id="p-file" type="file" accept="image/*">
+        <p style="margin-top:12px;"><button type="button" id="btn-portrait">奉納する</button></p>
+        <div class="statusline" id="p-status"></div>
+      </div>
+      <div>
+        <p style="font-size:13px;">アルバム(上映会で流れます)</p>
+        <label>思い出の写真(複数可)</label>
+        <input id="al-file" type="file" accept="image/*" multiple>
+        <label>残しておくことば</label>
+        <textarea id="al-text" maxlength="300" placeholder="生きているうちに、言っておきたいことを。"></textarea>
+        <p style="margin-top:12px;"><button type="button" id="btn-album">アルバムに納める</button></p>
+        <div class="statusline" id="al-status"></div>
+      </div>
+    </div>
+    <div style="border-top:2px dashed var(--dgrey);margin-top:16px;padding-top:10px;">
+      <p style="font-size:13px;">投稿の管理(いたずら弔辞・献花の削除)</p>
+      <ul class="choji-list" id="adm-comments"></ul>
+      <ul class="choji-list" id="adm-offerings" style="margin-top:8px;"></ul>
+    </div>
+    <p class="note">※ 合言葉ロックは簡易なものです(静的ページなので、本気で覗く人には見えます)。<br>
+    いたずらが増えてきたら、そのときはサーバー側の認証を足しましょう。</p>
+  </div>
+
+  <footer>— 香典は辞退申し上げます。コンティニューもできません。 —
+    <button type="button" id="btn-admin" style="font-size:10px;padding:2px 8px;margin-left:12px;border-width:2px;">管理</button>
+  </footer>
+</div>
+
+<!-- ======= 焼香ゲーム ======= -->
+<div class="overlay" id="game-overlay">
+  <div class="game box">
+    <h2>▼ 焼香</h2>
+    <p class="hint">針が中央(金色)に来た瞬間にボタン! 抹香を香炉にくべます。</p>
+    <div class="gauge"><div class="needle" id="needle"></div></div>
+    <div class="rank-result" id="rank-result">&nbsp;</div>
+    <p><button id="btn-stop">くべる!</button></p>
+  </div>
+</div>
+
+<!-- ======= 上映会 ======= -->
+<div class="overlay" id="show-overlay">
+  <div class="show-stage box">
+    <div class="show-head">
+      <span id="show-label"></span>
+      <button type="button" id="show-close" style="font-size:11px;padding:4px 8px;">✕ 閉じる</button>
+    </div>
+    <div class="show-body" id="show-body"></div>
+    <div class="show-nav">
+      <button type="button" id="show-prev">◀ 前</button>
+      <button type="button" id="show-auto">自動再生 ON</button>
+      <button type="button" id="show-next">次 ▶</button>
+    </div>
+  </div>
+</div>
+
+<!-- ======= 日記リーダー ======= -->
+<div class="overlay" id="diary-overlay">
+  <div class="show-stage box">
+    <div class="show-head">
+      <span>📖 <span id="diary-date"></span></span>
+      <button type="button" id="diary-close" style="font-size:11px;padding:4px 8px;">✕ 閉じる</button>
+    </div>
+    <div id="diary-body" style="white-space:pre-wrap;font-size:14px;line-height:2;max-height:60vh;overflow:auto;padding:6px 2px;"></div>
+  </div>
+</div>
+
+<script>
+/* =====================================================================
+   CONFIG — ここを書き換えて運用します
+   ===================================================================== */
+const CONFIG = {
+  // 遺影奉納のときに聞かれる合言葉(本人確認用。必ず変えてください)
+  ADMIN_KEY: "kohei",
+
+  // 遺影に写真URLを直接指定する場合のみ使用
+  // (通常は「遺影の奉納」コーナーからアップロードするので空のままでOK)
+  PORTRAIT_URL: "",
+
+  // クラウド保存のビンID。「保存用ストレージを作成」後に表示されるIDを
+  // ここに貼っておくと、URLに#bin=を付けなくても全員同じ保存先になります。
+  DEFAULT_BIN_ID: "",
+
+  // 日記を置くGitHubリポジトリ(GitHub Pagesで公開するなら同じリポジトリでOK)
+  // 例: { owner: "kohei-oka", repo: "soushiki", branch: "main", diaryDir: "diary" }
+  GITHUB: { owner: "Koheui", repo: "kokubetsu", branch: "main", diaryDir: "diary" },
+
+  // 毎年のメッセージ動画(YouTube等のURLを追記していく)
+  VIDEOS: [
+    { year: 2026, title: "第1回 生前のごあいさつ", url: "" }
+  ],
+
+  // 弔辞が空のときに表示するサンプル
+  PRESET_COMMENTS: [
+    { name: "近所の人", msg: "大往生。コンティニューはできません。", rank: "GREAT", ts: 0 },
+    { name: "元同僚", msg: "セーブデータは私たちの心の中に残っています。", rank: "PERFECT", ts: 0 },
+    { name: "名無しの参列者", msg: "この葬式、攻略本が必要では。", rank: "MISS", ts: 0 }
+  ]
+};
+</script>
+<script>
+/* ===================== ドット絵シーン (320x180) ===================== */
+const Scene = (() => {
+  const cv = document.getElementById('scene-cv');
+  const ctx = cv.getContext('2d');
+  const W = 320, H = 180;
+  const bg = document.createElement('canvas'); bg.width = W; bg.height = H;
+  const b = bg.getContext('2d');
+  ctx.imageSmoothingEnabled = false;
+
+  function P(g, c, x, y, w, h){ g.fillStyle = c; g.fillRect(x|0, y|0, w||1, h||1); }
+  function rng(seed){ let s = seed >>> 0 || 1; return () => (s = (s*1103515245 + 12345) & 0x7fffffff) / 0x7fffffff; }
+
+  const PURPLE = ['#ffffff','#f0e8f8','#cbb2e4','#a486c8','#7c5aa4'];
+  const WHITE  = ['#ffffff','#f6f2fa','#eae4f2'];
+
+  let portraitImg = null;
+  let offerings = [];
+
+  /* ---- 花 ---- */
+  function flowerAt(g, x, y, c){
+    P(g,c,x-1,y,3,1); P(g,c,x,y-1,1,3);
+    P(g,'#fffdf4',x,y,1,1);
+  }
+  function fillFlowers(region, seed, palette, bbox){
+    palette = palette || PURPLE;
+    const x0 = bbox ? Math.max(0,bbox[0]) : 0, y0 = bbox ? Math.max(0,bbox[1]) : 0;
+    const x1 = bbox ? Math.min(W,bbox[2]) : W, y1 = bbox ? Math.min(H,bbox[3]) : H;
+    const rand = rng(seed);
+    for (let y=y0;y<y1;y++) for (let x=x0;x<x1;x++)
+      if (region(x,y)) P(b, ((x^y)&3) ? '#33512d' : '#28421f', x, y, 1, 1);
+    for (let y=y0;y<y1;y++) for (let x=x0;x<x1;x++){
+      if (!region(x,y)) continue;
+      if (rand() < .22) flowerAt(b, x, y, palette[(rand()*palette.length)|0]);
+    }
+  }
+
+  /* ---- 静的背景 ---- */
+  function redrawBg(){
+    // カーテン(襞つき・暗め)
+    for (let x=0; x<W; x++){
+      const m = x % 14;
+      const c = m<2 ? '#6e5a40' : m<3 ? '#7e684a' : m===9 ? '#96805c' : '#877252';
+      P(b,c,x,0,1,158);
+    }
+    b.fillStyle = 'rgba(20,12,8,.28)'; b.fillRect(0,118,W,40);
+    // 天井とダウンライト
+    P(b,'#b8b2a4',0,0,W,14); P(b,'#a09a8c',0,14,W,2);
+    for (let x=20; x<W; x+=40){
+      P(b,'#8c8678',x-2,10,5,2); P(b,'#ffe9a8',x-1,12,3,2); P(b,'#fff6d8',x,12,1,1);
+    }
+    // 絨毯(暗め)
+    P(b,'#46202c',0,156,W,H-156);
+    for (let y=156; y<H; y+=6) P(b,'#381923',0,y,W,1);
+    const fr = rng(7);
+    for (let i=0;i<90;i++) P(b,'#552736',(fr()*W)|0,157+((fr()*(H-158))|0),1,1);
+    // 屏風パネル
+    [34,72,222,260].forEach(drawPanel);
+    // スタンド花
+    drawStand(18); drawStand(302);
+    // 花のアーチ・棺・花壇・祭壇テーブル
+    drawArch();
+    drawCasket();
+    drawOfferingsBack();
+    drawBanks();
+    drawTable();
+    drawOfferingsFront();
+    drawPortraitFrame();
+    drawVignette();
+  }
+
+  /* 中央スポットライト+周辺減光 */
+  function drawVignette(){
+    // 低解像度で描いてから拡大し、ドット絵らしい段々の光にする
+    const sw = 80, sh = 45, sc = 4;
+    const dk = document.createElement('canvas'); dk.width = sw; dk.height = sh;
+    const d = dk.getContext('2d');
+    d.fillStyle = 'rgba(8,4,16,.40)'; d.fillRect(0,0,sw,sh);
+    d.globalCompositeOperation = 'destination-out';
+    d.fillStyle = '#000';
+    [[72,62,.85],[104,84,.5],[136,106,.28]].forEach(v => {
+      d.globalAlpha = v[2];
+      d.beginPath(); d.ellipse(160/sc,102/sc,v[0]/sc,v[1]/sc,0,0,Math.PI*2); d.fill();
+    });
+    d.globalAlpha = 1; d.globalCompositeOperation = 'source-over';
+    b.imageSmoothingEnabled = false;
+    b.drawImage(dk,0,0,W,H);
+  }
+
+  /* 参列者の献花(松=立札つきスタンド花 / 竹=鉢花 / 梅=花束) */
+  const MATSU_SLOTS = [230, 90, 270, 50];
+  /* 全献花の配置を1か所で計算(canvas描画と名札DOMで共有) */
+  function layoutOfferings(){
+    const out = [], matsu = [], take = [], ume = [];
+    offerings.forEach(o => {
+      if (o.grade === 'matsu') matsu.push(o);
+      else if (o.grade === 'take') take.push(o);
+      else ume.push(o);
+    });
+    matsu.forEach((o,i) => {
+      if (i < MATSU_SLOTS.length){
+        out.push({ o, kind:'stand', x: MATSU_SLOTS[i], seed:(o.ts||i)+i });
+      } else {
+        const k = i - MATSU_SLOTS.length;
+        if (k < 6){
+          const side = k%2 ? -1 : 1;
+          out.push({ o, kind:'pot9', x: 160 + side*(86 + (k>>1)*20), seed:(o.ts||i)+i });
+        }
+      }
+    });
+    take.slice(-12).forEach((o,i) => {
+      const side = i%2 ? -1 : 1;
+      out.push({ o, kind:'pot', x: 160 + side*(54 + (i>>1)*15), seed:(o.ts||i)+i });
+    });
+    ume.slice(-22).forEach((o,i) => {
+      const side = i%2 ? -1 : 1;
+      const x = 160 + side*(44 + (i>>1)*12) - 3;
+      if (x >= 4 && x <= 310) out.push({ o, kind:'bouquet', x, seed:(o.ts||i)+i });
+    });
+    return out;
+  }
+  function drawOfferingsBack(){
+    layoutOfferings().forEach(it => { if (it.kind === 'stand') drawKengeStand(it.x, it.seed); });
+  }
+  function drawOfferingsFront(){
+    layoutOfferings().forEach(it => {
+      if (it.kind === 'pot9') drawPotFlower(it.x, 9, it.seed);
+      else if (it.kind === 'pot') drawPotFlower(it.x, 6, it.seed);
+      else if (it.kind === 'bouquet') drawBouquet(it.x, 164, it.seed);
+    });
+  }
+  function drawKengeStand(cx, seed){
+    P(b,'#f2f2f2',cx-3,97,6,46); P(b,'#d0d0d0',cx+1,97,2,46);
+    P(b,'#f2f2f2',cx-7,143,14,4); P(b,'#c8c8c8',cx-7,146,14,1);
+    fillFlowers((x,y)=>{ const dx=x-cx, dy=y-84; return dx*dx+dy*dy <= 11*11; },
+      seed, PURPLE, [cx-12,72,cx+13,97]);
+  }
+  function drawPotFlower(cx, r, seed){
+    if (cx < 10 || cx > 310) return;
+    const by = 154;
+    fillFlowers((x,y)=>{ const dx=x-cx, dy=y-(by-r+1); return dx*dx+dy*dy <= r*r; },
+      seed, PURPLE, [cx-r-1,by-2*r-1,cx+r+2,by+1]);
+    const pw = Math.max(6,(r*1.6)|0), px0 = cx-(pw>>1);
+    P(b,'#8a5a34',px0,by,pw,6);
+    P(b,'#a06a3e',px0,by,pw,1);
+    P(b,'#6a4224',px0,by+4,pw,2);
+  }
+  function drawBouquet(x,y,seed){
+    const rand = rng(seed);
+    // 葉の下地(白背景でも花が沈まないように)
+    P(b,'#33512d',x,y+1,6,5);
+    P(b,'#28421f',x+1,y+5,4,2);
+    // 包み紙
+    for (let i=0;i<6;i++){
+      const w = 2 + ((i*4/5)|0);
+      P(b,'#e6dfc8',x+3-((w/2)|0), y+6+i, w, 1);
+    }
+    P(b,'#a89a80',x+1,y+11,5,1);
+    P(b,'#a89a80',x+3,y+7,1,4);
+    flowerAt(b,x+2,y+2, rand()<.5 ? '#ffffff' : '#cbb2e4');
+    flowerAt(b,x+4,y+4, rand()<.5 ? '#ffffff' : '#a486c8');
+    flowerAt(b,x+1,y+5, '#ffffff');
+    flowerAt(b,x+5,y+1, '#a486c8');
+  }
+
+  function drawPanel(x0){
+    const w=28, top=34, bot=120;
+    for (let y=top; y<bot; y++){
+      const d=y-top;
+      const inset = d===0?10 : d===1?6 : d===2?4 : d===3?2 : d===4?1 : 0;
+      P(b,'#faf5f5',x0+inset,y,w-inset*2,1);
+    }
+    for (let y=top+5; y<bot; y++) P(b,'#e6dade',x0+w-2,y,1,1);
+    P(b,'#d8c8cc',x0,bot-1,w,1);
+  }
+
+  function drawStand(cx){
+    P(b,'#ffffff',cx-4,92,8,46); P(b,'#d0d0d0',cx+2,92,2,46);
+    P(b,'#ffffff',cx-8,138,16,4); P(b,'#c8c8c8',cx-8,141,16,1);
+    fillFlowers((x,y)=>{ const dx=x-cx, dy=y-78; return dx*dx+dy*dy <= 13*13; }, cx*31+7);
+  }
+
+  function drawArch(){
+    const cx=160, cy=104, rx=60, ry=48, ix=26, iy=30;
+    const outer=(x,y)=>{ const dx=x-cx,dy=y-cy; return (dx*dx)/(rx*rx)+(dy*dy)/(ry*ry) <= 1 && y<=124; };
+    const inner=(x,y)=>{ const dx=x-cx,dy=y-cy; return (dx*dx)/(ix*ix)+(dy*dy)/(iy*iy) <= 1 && y<=124; };
+    fillFlowers((x,y)=> outer(x,y) && !inner(x,y), 99);
+    fillFlowers(inner, 77, WHITE); // 遺影のまわりは白菊
+  }
+
+  function drawCasket(){
+    for (let y=120; y<148; y++){
+      const inset = y<122?6 : y<124?3 : y<126?1 : 0;
+      P(b,'#f4f4f4',122+inset,y,76-inset*2,1);
+    }
+    for (let x=126; x<196; x+=6) P(b,'#e4e4e4',x,124,1,24);
+    P(b,'#ffffff',122,126,76,1);
+    P(b,'#d8d8d8',122,146,76,2);
+  }
+
+  function drawBanks(){
+    fillFlowers((x,y)=>{
+      if (y<96 || y>=156) return false;
+      const g1 = Math.exp(-((x-72)*(x-72))/1700);
+      const g2 = Math.exp(-((x-248)*(x-248))/1700);
+      const g3 = Math.exp(-((x-160)*(x-160))/5200)*.55;
+      return y >= 148 - 40*Math.max(g1,g2,g3);
+    }, 4242);
+  }
+
+  function drawTable(){
+    for (let y=148; y<172; y++){
+      const inset = y===148?2:0;
+      P(b,'#fbfbfb',100+inset,y,120-inset*2,1);
+    }
+    for (let x=104; x<220; x+=7) P(b,'#e8e8e8',x,152,1,20);
+    P(b,'#ffffff',100,148,120,1);
+    P(b,'#d8b860',100,150,120,1);
+    P(b,'#e0e0e0',100,170,120,2);
+    // 燭台+ロウソク
+    [112,208].forEach(x=>{
+      P(b,'#b8b8c4',x-2,144,5,2); P(b,'#a0a0ac',x-1,146,3,3);
+      P(b,'#f8f4e4',x-1,132,3,12);
+    });
+    // 香炉(左・金)
+    P(b,'#c8a040',128,140,16,7); P(b,'#a8842c',128,145,16,2);
+    P(b,'#e0c060',129,140,14,2);
+    P(b,'#8a6c20',130,147,3,2); P(b,'#8a6c20',139,147,3,2);
+    P(b,'#808080',131,139,10,1);
+    // おりん(右・赤い布団の上)
+    P(b,'#c04a50',194,144,14,3);
+    P(b,'#d8b860',196,139,10,5); P(b,'#f0d890',197,139,8,1); P(b,'#a8842c',196,143,10,1);
+  }
+
+  /* ---- 遺影 ---- */
+  const PORT_PAL = {
+    'B':'#111111','S':'#e8c8a0','W':'#f5f5f5','G':'#c8c8c8','N':'#404040','M':'#804830'
+  };
+  const PORT_ROWS = [
+    "GGGGGGGGGGGGGGGGGGGGGGGG",
+    "GGGGGGGGBBBBBBBBGGGGGGGG",
+    "GGGGGGGBBBBBBBBBBGGGGGGG",
+    "GGGGGGBBBBBBBBBBBBGGGGGG",
+    "GGGGGGBBSSSSSSSSBBGGGGGG",
+    "GGGGGGBSSSSSSSSSSBGGGGGG",
+    "GGGGGGBSSBSSSSBSSBGGGGGG",
+    "GGGGGGSSSBSSSSBSSSGGGGGG",
+    "GGGGGGSSSSSSSSSSSSGGGGGG",
+    "GGGGGGSSSSSBBSSSSSGGGGGG",
+    "GGGGGGSSSSSSSSSSSSGGGGGG",
+    "GGGGGGSSSSMMMMSSSSGGGGGG",
+    "GGGGGGGSSSSSSSSSSGGGGGGG",
+    "GGGGGGGGSSSSSSSSGGGGGGGG",
+    "GGGGGGGGGSSSSSSGGGGGGGGG",
+    "GGGGGGBBBWWSSWWBBBGGGGGG",
+    "GGGGGBBBBWWWWWWBBBBGGGGG",
+    "GGGGBBBBBWWNNWWBBBBBGGGG",
+    "GGGBBBBBBWWNNWWBBBBBBGGG",
+    "GGGBBBBBBWWNNWWBBBBBBGGG",
+    "GGBBBBBBBWWNNWWBBBBBBBGG",
+    "GGBBBBBBBWWNNWWBBBBBBBGG",
+    "GGBBBBBBBBWNNWBBBBBBBBGG",
+    "GBBBBBBBBBWNNWBBBBBBBBBG",
+    "GBBBBBBBBBWWWWBBBBBBBBBG",
+    "GBBBBBBBBBBBBBBBBBBBBBBG"
+  ];
+
+  function drawPortraitFrame(){
+    // 台座
+    P(b,'#f0f0f0',146,106,28,14); P(b,'#d8d8d8',146,118,28,2);
+    // 黒額+白マット
+    P(b,'#141414',140,54,40,52);
+    P(b,'#f5f5f5',142,56,36,48);
+    P(b,'#141414',143,57,34,40);
+    drawPortraitImage(144,58,32,38);
+    // 胡蝶蘭(左に垂れる)
+    P(b,'#46703f',137,50,1,26);
+    [[136,52],[132,56],[130,61],[132,66],[135,71]].forEach(pt=>{
+      P(b,'#ffffff',pt[0]-1,pt[1],3,1);
+      P(b,'#ffffff',pt[0],pt[1]-1,1,3);
+      P(b,'#e8e0f4',pt[0],pt[1],1,1);
+    });
+  }
+  function drawPortraitImage(x,y,w,h){
+    if (portraitImg){
+      b.save();
+      try{
+        b.imageSmoothingEnabled = false;
+        b.filter = 'grayscale(1) contrast(1.1)';
+        const s = Math.max(w/portraitImg.width, h/portraitImg.height);
+        const sw = w/s, sh = h/s;
+        const sx = (portraitImg.width - sw)/2, sy = (portraitImg.height - sh)/4;
+        b.drawImage(portraitImg, sx, sy, sw, sh, x, y, w, h);
+        b.restore();
+        return;
+      } catch(e){ b.restore(); }
+    }
+    P(b,'#d4d4d4',x,y,w,h);
+    PORT_ROWS.forEach((row,ry)=>{
+      for (let rx=0; rx<row.length; rx++){
+        const c = PORT_PAL[row[rx]];
+        if (c) P(b,c,x+4+rx,y+6+ry,1,1);
+      }
+    });
+  }
+
+  /* ---- 動的要素 ---- */
+  let rocking = false;
+  let strikeUntil = 0, ringUntil = 0;
+  const particles = [];
+
+  function puffSmoke(n){
+    for (let i=0;i<n;i++){
+      particles.push({
+        x: 133 + Math.random()*6, y: 137,
+        vx: (Math.random()-.5)*.14, vy: -(.26 + Math.random()*.24),
+        life: 110 + Math.random()*70, d: Math.random()*60
+      });
+    }
+  }
+  function strike(){ strikeUntil = performance.now() + 130; }
+  function ring(){ ringUntil = performance.now() + 300; }
+  function setRocking(v){ rocking = v; }
+  function setPortrait(url){
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = () => { portraitImg = img; redrawBg(); };
+    img.src = url;
+  }
+
+  function drawMonk(t){
+    const now = performance.now();
+    const lean = rocking ? Math.round(Math.sin(t/330)*1.5) : 0;
+    const breathe = (!rocking && (((t/1300)|0)%2)) ? 1 : 0;
+    const mx = 160 + lean;
+    // 座布団
+    P(ctx,'#5a4478',148+lean,172,26,5); P(ctx,'#463360',148+lean,176,26,1);
+    // 法衣(後ろ姿・裾広がり)
+    for (let i=0;i<18;i++){
+      const y = 154+i, half = 6 + ((i*9/17)|0);
+      P(ctx,'#34343c',mx-half,y,half*2,1);
+    }
+    // 袈裟(紫)
+    for (let i=2;i<18;i++) P(ctx,'#8a68b0',mx-3,154+i,6,1);
+    P(ctx,'#6c4e92',mx+1,158,2,13);
+    // 襟
+    P(ctx,'#26262c',mx-6,152,12,2);
+    // 頭(剃髪)
+    const hy = 140 + breathe;
+    P(ctx,'#e0b894',mx-4,hy+1,8,8);
+    P(ctx,'#e0b894',mx-3,hy,6,1); P(ctx,'#e0b894',mx-3,hy+9,6,1);
+    P(ctx,'#c89c74',mx+2,hy+1,2,8);
+    P(ctx,'#d0a87c',mx-4,hy+8,8,1);
+    P(ctx,'#d0a87c',mx-5,hy+4,1,3); P(ctx,'#c89c74',mx+4,hy+4,1,3);
+    // 木魚(右側・叩くとつぶれる)
+    const squash = now < strikeUntil ? 1 : 0;
+    P(ctx,'#c04a50',175,171,16,3);
+    P(ctx,'#b06a38',176,164+squash,14,8-squash);
+    P(ctx,'#8a4e26',177,169,12,2);
+    P(ctx,'#5c3418',178,166+squash,10,1);
+    // 腕と撥
+    if (now < strikeUntil){
+      P(ctx,'#34343c',mx+6,158,4,2);
+      P(ctx,'#e0b894',mx+10,159,2,2);
+      P(ctx,'#d8b070',mx+12,161,5,1);
+      P(ctx,'#fff8d0',181,161,2,2); // 打撃スパーク
+      P(ctx,'#ffe870',180,159,1,1); P(ctx,'#ffe870',184,160,1,1);
+    } else {
+      P(ctx,'#34343c',mx+5,156,3,3);
+      P(ctx,'#e0b894',mx+8,155,2,2);
+      P(ctx,'#d8b070',mx+9,150,2,5);
+    }
+  }
+
+  function frame(t){
+    ctx.clearRect(0,0,W,H);
+    ctx.drawImage(bg,0,0);
+    // ロウソクの炎(揺らぎ)
+    const f = ((t/170)|0)%2;
+    [112,208].forEach(x=>{
+      P(ctx,'#ff9830',x-1,127+f,3,4-f);
+      P(ctx,'#ffd860',x,128+f,1,2);
+      P(ctx,'#fff6d0',x,129+f,1,1);
+    });
+    // おりんのスパーク
+    if (performance.now() < ringUntil){
+      P(ctx,'#fff8d0',200,135,2,2);
+      P(ctx,'#ffe870',197,133,1,1); P(ctx,'#ffe870',204,134,1,1);
+      P(ctx,'#ffe870',201,131,1,1);
+    }
+    drawMonk(t);
+    // 線香の煙
+    for (let i=particles.length-1;i>=0;i--){
+      const p = particles[i];
+      p.x += p.vx + Math.sin((t + p.d*40)/460)*.06;
+      p.y += p.vy; p.life--;
+      if (p.life<=0 || p.y<18){ particles.splice(i,1); continue; }
+      ctx.globalAlpha = Math.min(1, p.life/70)*.9;
+      const s = p.life > 40 ? 2 : 1;
+      P(ctx,'#b8b8b8',p.x,p.y,s,s);
+      ctx.globalAlpha = 1;
+    }
+    requestAnimationFrame(frame);
+  }
+
+  redrawBg();
+  if (CONFIG.PORTRAIT_URL) setPortrait(CONFIG.PORTRAIT_URL);
+  requestAnimationFrame(frame);
+
+  function renderTags(){
+    const holder = document.getElementById('tags');
+    if (!holder) return;
+    holder.innerHTML = '';
+    layoutOfferings().forEach(it => {
+      const t = document.createElement('div');
+      let maxCh = 12, tagX = it.x;
+      if (it.kind === 'stand'){ t.className = 'kenge-tag'; }
+      else if (it.kind === 'pot9' || it.kind === 'pot'){ t.className = 'kenge-tag pot-tag'; maxCh = 8; tagX = it.x + 8; }
+      else { t.className = 'kenge-tag mini-tag'; maxCh = 6; tagX = it.x + 8; }
+      (it.o.name || '名無し').split('').slice(0, maxCh).forEach((ch, j) => {
+        if (j) t.appendChild(document.createElement('br'));
+        t.appendChild(document.createTextNode(ch));
+      });
+      t.style.left = (tagX/320*100) + '%';
+      holder.appendChild(t);
+    });
+  }
+  function setOfferings(arr){ offerings = arr || []; redrawBg(); renderTags(); }
+
+  return { setPortrait, setOfferings, puffSmoke, strike, ring, setRocking };
+})();
+function setPortrait(url){ Scene.setPortrait(url); }
+function puffSmoke(n){ Scene.puffSmoke(n == null ? 10 : n); }
+
+/* ===================== 効果音 (WebAudio) ===================== */
+const SFX = (() => {
+  let ac = null;
+  function ctx(){ return ac || (ac = new (window.AudioContext || window.webkitAudioContext)()); }
+  function mokugyo(decay){ // ポクッ(decay: 秒)
+    const d = decay || .12;
+    const a = ctx(), t = a.currentTime;
+    const o = a.createOscillator(), g = a.createGain();
+    o.type = 'square'; o.frequency.setValueAtTime(220, t);
+    o.frequency.exponentialRampToValueAtTime(90, t + Math.min(.08, d * .7));
+    g.gain.setValueAtTime(.25, t);
+    g.gain.exponentialRampToValueAtTime(.001, t + d);
+    o.connect(g).connect(a.destination); o.start(t); o.stop(t + d + .02);
+  }
+  function kane(decay){ // チーン(decay: 秒)
+    const d = decay || 2.2;
+    const a = ctx(), t = a.currentTime;
+    [880, 1320, 1760].forEach((f, i) => {
+      const o = a.createOscillator(), g = a.createGain();
+      o.type = 'sine'; o.frequency.value = f;
+      g.gain.setValueAtTime(.18 / (i + 1), t);
+      g.gain.exponentialRampToValueAtTime(.0001, t + Math.max(.06, d - i * d * .18));
+      o.connect(g).connect(a.destination); o.start(t); o.stop(t + d + .1);
+    });
+  }
+  return { mokugyo, kane, ctx };
+})();
+
+/* ===================== 読経ドローン ===================== */
+const Sutra = (() => {
+  let nodes = null, timer = null;
+  function start(){
+    if (nodes) return;
+    const A = SFX.ctx();
+    const o = A.createOscillator(), g = A.createGain(), f = A.createBiquadFilter();
+    const lfo = A.createOscillator(), lg = A.createGain();
+    o.type = 'sawtooth'; o.frequency.value = 98;
+    f.type = 'lowpass'; f.frequency.value = 420; f.Q.value = 2;
+    g.gain.value = .05;
+    lfo.type = 'square'; lfo.frequency.value = 6.5; // もごもご
+    lg.gain.value = .03;
+    lfo.connect(lg).connect(g.gain);
+    o.connect(f).connect(g).connect(A.destination);
+    o.start(); lfo.start();
+    nodes = { o, lfo };
+    timer = setInterval(() => { // 音程がゆらぐ
+      nodes.o.frequency.setTargetAtTime(92 + Math.random() * 14, A.currentTime, .06);
+    }, 650);
+  }
+  function stop(){
+    if (!nodes) return;
+    clearInterval(timer);
+    try { nodes.o.stop(); nodes.lfo.stop(); } catch(e){}
+    nodes = null;
+  }
+  return { start, stop, get on(){ return !!nodes; } };
+})();
+
+/* ===================== 16ステップリズムマシン ===================== */
+const Seq = (() => {
+  const STEPS = 16;
+  const TRACKS = [
+    { key: 'kane',    label: '鐘',   hit: () => { SFX.kane(parseFloat(document.getElementById('dec-kane').value)); Scene.ring(); } },
+    { key: 'mokugyo', label: '木魚', hit: () => { SFX.mokugyo(parseFloat(document.getElementById('dec-moku').value)); Scene.strike(); } }
+  ];
+  const pattern = {
+    kane:    Array(STEPS).fill(false),
+    mokugyo: Array(STEPS).fill(false)
+  };
+  // 初期パターン:木魚は8分打ち、鐘は頭に一発
+  [0,2,4,6,8,10,12,14].forEach(i => pattern.mokugyo[i] = true);
+  pattern.kane[0] = true;
+
+  let playing = false, step = 0, timer = null;
+  const cells = { kane: [], mokugyo: [] };
+
+  function build(){
+    const seqEl = document.getElementById('seq');
+    TRACKS.forEach(tr => {
+      const row = document.createElement('div');
+      row.className = 'seq-row';
+      const lbl = document.createElement('div');
+      lbl.className = 'lbl';
+      lbl.textContent = tr.label;
+      row.appendChild(lbl);
+      for (let i = 0; i < STEPS; i++) {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'step' + (pattern[tr.key][i] ? ' on' : '');
+        b.addEventListener('click', () => {
+          pattern[tr.key][i] = !pattern[tr.key][i];
+          b.classList.toggle('on', pattern[tr.key][i]);
+        });
+        row.appendChild(b);
+        cells[tr.key].push(b);
+      }
+      seqEl.appendChild(row);
+    });
+  }
+  function highlight(i){
+    TRACKS.forEach(tr => cells[tr.key].forEach((c, j) => c.classList.toggle('now', j === i)));
+  }
+  function tick(){
+    highlight(step);
+    TRACKS.forEach(tr => { if (pattern[tr.key][step]) tr.hit(); });
+    step = (step + 1) % STEPS;
+  }
+  function interval(){
+    const bpm = Math.min(200, Math.max(40, parseInt(document.getElementById('bpm').value, 10) || 90));
+    return 60000 / bpm / 4; // 16分音符
+  }
+  function play(){
+    if (playing) return;
+    playing = true; step = 0;
+    tick();
+    timer = setInterval(tick, interval());
+    document.getElementById('btn-play').textContent = '■ 停止';
+    Scene.setRocking(true);
+  }
+  function stop(){
+    if (!playing) return;
+    playing = false;
+    clearInterval(timer);
+    highlight(-1);
+    document.getElementById('btn-play').textContent = '▶ 再生';
+    if (!Sutra.on) Scene.setRocking(false);
+  }
+  build();
+  document.getElementById('btn-play').addEventListener('click', () => playing ? stop() : play());
+  document.getElementById('bpm').addEventListener('change', () => {
+    if (playing) { clearInterval(timer); timer = setInterval(tick, interval()); }
+  });
+  document.getElementById('btn-sutra').addEventListener('click', () => {
+    const btn = document.getElementById('btn-sutra');
+    if (Sutra.on) {
+      Sutra.stop();
+      btn.textContent = '読経 ON';
+      if (!playing) Scene.setRocking(false);
+    } else {
+      Sutra.start();
+      btn.textContent = '読経 OFF';
+      Scene.setRocking(true);
+    }
+  });
+  return { play, stop };
+})();
+
+/* ===================== 焼香タイミングゲーム ===================== */
+const Game = (() => {
+  const overlay = document.getElementById('game-overlay');
+  const needle = document.getElementById('needle');
+  const result = document.getElementById('rank-result');
+  const btnStop = document.getElementById('btn-stop');
+  let raf = null, t0 = 0, running = false, resolveFn = null;
+
+  const RANKS = [
+    { max: .045, rank: 'PERFECT', label: '見事な焼香!', color: '#ffd75f' },
+    { max: .13,  rank: 'GREAT',   label: '心のこもった焼香', color: '#9fd7ff' },
+    { max: .30,  rank: 'GOOD',    label: 'まずまずの焼香', color: '#b8e8b8' },
+    { max: 9,    rank: 'MISS',    label: '灰をこぼした…', color: '#9a9a9a' }
+  ];
+
+  function loop(ts){
+    if (!t0) t0 = ts;
+    // 周期1.6秒で左右に往復(sin)
+    const p = (Math.sin((ts - t0) / 1600 * Math.PI * 2 - Math.PI / 2) + 1) / 2;
+    needle.style.left = `calc(${(p * 100).toFixed(2)}% - 3px)`;
+    needle.dataset.p = p;
+    if (running) raf = requestAnimationFrame(loop);
+  }
+  function stop(){
+    if (!running) return;
+    running = false;
+    cancelAnimationFrame(raf);
+    const p = parseFloat(needle.dataset.p || '0');
+    const d = Math.abs(p - .5);
+    const r = RANKS.find(x => d <= x.max);
+    result.textContent = `${r.rank} — ${r.label}`;
+    result.style.color = r.color;
+    if (r.rank === 'PERFECT') SFX.kane(); else SFX.mokugyo();
+    puffSmoke(r.rank === 'PERFECT' ? 16 : r.rank === 'MISS' ? 3 : 9);
+    setTimeout(() => {
+      overlay.classList.remove('show');
+      if (resolveFn) resolveFn(r.rank);
+    }, 1400);
+  }
+  btnStop.addEventListener('click', stop);
+  document.addEventListener('keydown', e => {
+    if (overlay.classList.contains('show') && (e.code === 'Space' || e.code === 'Enter')) {
+      e.preventDefault(); stop();
+    }
+  });
+
+  function play(){
+    return new Promise(res => {
+      resolveFn = res;
+      result.textContent = ' ';
+      t0 = 0; running = true;
+      overlay.classList.add('show');
+      raf = requestAnimationFrame(loop);
+    });
+  }
+  return { play };
+})();
+
+/* ===================== クラウド保存 ===================== */
+/* jsonblob.com を第一候補、kvdb.io を予備に使う。
+   どちらも無料・登録不要。届かない環境では自動でメモリ保存に切替。 */
+const Store = (() => {
+  const JB = 'https://jsonblob.com/api/jsonBlob';
+  const KV = 'https://kvdb.io';
+  let mode = 'memory';          // 'jb' | 'kv' | 'memory'
+  let binId = null;
+  let memory = { comments: [], portraits: [], offerings: [], photos: [], texts: [] };
+  function normalize(j){
+    if (!j || typeof j !== 'object' || Array.isArray(j)) j = {};
+    ['comments','portraits','offerings','photos','texts'].forEach(k => {
+      if (!Array.isArray(j[k])) j[k] = [];
+    });
+    return j;
+  }
+
+  function parseHash(){
+    const m = new URLSearchParams(location.hash.slice(1)).get('bin');
+    if (m && m.includes(':')) { const [p, id] = m.split(':'); return { p, id }; }
+    return null;
+  }
+  async function init(){
+    const h = parseHash() ||
+      (CONFIG.DEFAULT_BIN_ID.includes(':')
+        ? { p: CONFIG.DEFAULT_BIN_ID.split(':')[0], id: CONFIG.DEFAULT_BIN_ID.split(':')[1] }
+        : null);
+    if (h) {
+      mode = h.p; binId = h.id;
+      try { await load(); return; } catch(e){ mode = 'memory'; binId = null; }
+    }
+    // ビン未設定 → 新規作成を試みる(だめならメモリ)
+    try {
+      const r = await fetch(JB, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ comments: [], portraits: [], offerings: [], photos: [], texts: [] })
+      });
+      if (r.ok) {
+        const loc = r.headers.get('Location') || '';
+        const id = loc.split('/').filter(Boolean).pop();
+        if (id) {
+          mode = 'jb'; binId = id;
+          location.hash = 'bin=jb:' + id;
+          return;
+        }
+      }
+      throw new Error('jsonblob failed');
+    } catch(e1) {
+      try {
+        const r = await fetch(KV, { method: 'POST', body: 'email=' });
+        if (r.ok) {
+          const id = (await r.text()).trim();
+          if (id && id.length < 40) {
+            mode = 'kv'; binId = id;
+            await save();
+            location.hash = 'bin=kv:' + id;
+            return;
+          }
+        }
+        throw new Error('kvdb failed');
+      } catch(e2) {
+        mode = 'memory';
+      }
+    }
+  }
+  async function load(){
+    if (mode === 'jb') {
+      const r = await fetch(`${JB}/${binId}`);
+      if (!r.ok) throw new Error('load failed');
+      memory = normalize(await r.json());
+    } else if (mode === 'kv') {
+      const r = await fetch(`${KV}/${binId}/choji`);
+      if (r.ok) {
+        try { memory = normalize(await r.json()); }
+        catch(e){ /* まだ空 */ }
+      } else if (r.status !== 404) throw new Error('load failed');
+    }
+    return memory.comments;
+  }
+  async function save(){
+    if (mode === 'jb') {
+      const r = await fetch(`${JB}/${binId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(memory)
+      });
+      if (!r.ok) throw new Error('save failed');
+    } else if (mode === 'kv') {
+      const r = await fetch(`${KV}/${binId}/choji`, { method: 'PUT', body: JSON.stringify(memory) });
+      if (!r.ok) throw new Error('save failed');
+    }
+  }
+  async function push(key, item){
+    try { await load(); } catch(e){ /* 直近のmemoryで続行 */ }
+    memory[key].push(item);
+    if (mode !== 'memory') {
+      try { await save(); } catch(e){ mode = 'memory'; }
+    }
+    return memory[key];
+  }
+  async function removeAt(key, i){
+    try { await load(); } catch(e){ /* 直近のmemoryで続行 */ }
+    memory[key].splice(i, 1);
+    if (mode !== 'memory') {
+      try { await save(); } catch(e){ mode = 'memory'; }
+    }
+    return memory[key];
+  }
+  return {
+    init, load, removeAt,
+    add: c => push('comments', c),
+    addPortrait: p => push('portraits', p),
+    addOffering: o => push('offerings', o),
+    addPhoto: p => push('photos', p),
+    addText: t => push('texts', t),
+    get mode(){ return mode; },
+    get binId(){ return binId; },
+    get comments(){ return memory.comments; },
+    get portraits(){ return memory.portraits; },
+    get offerings(){ return memory.offerings; },
+    get photos(){ return memory.photos; },
+    get texts(){ return memory.texts; }
+  };
+})();
+
+/* ===================== UI ===================== */
+const $list = document.getElementById('choji-list');
+const $status = document.getElementById('storage-status');
+const $form = document.getElementById('choji-form');
+const $btnShoukou = document.getElementById('btn-shoukou');
+let lastRank = null;
+
+function esc(s){
+  return s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function renderList(){
+  const items = Store.comments.length ? Store.comments : CONFIG.PRESET_COMMENTS;
+  $list.innerHTML = items.slice().reverse().map(c => {
+    const d = c.ts ? new Date(c.ts).toLocaleDateString('ja-JP') : '';
+    return `<li>
+      <div class="meta">
+        <span>▶ ${esc(c.name || '名無しの参列者')}</span>
+        <span class="rank-badge rank-${esc(c.rank || 'GOOD')}">${esc(c.rank || 'GOOD')}</span>
+        <span>${d}</span>
+      </div>
+      <div>${esc(c.msg || '')}</div>
+    </li>`;
+  }).join('');
+}
+function renderStatus(){
+  if (Store.mode === 'memory') {
+    $status.className = 'statusline err';
+    $status.textContent = '保存先: このブラウザ内のみ(外部ストレージに接続できないため、閉じると消えます)';
+  } else {
+    $status.className = 'statusline';
+    const url = location.origin.startsWith('http') ? location.href : '(このファイルを公開したURL)#' + location.hash.slice(0) ;
+    $status.innerHTML = `保存先: クラウド接続中 [${Store.mode}:${Store.binId}]<br>この URL をそのまま共有すれば、同じ式場に弔辞が集まります。<br>ID を CONFIG.DEFAULT_BIN_ID に貼れば #bin= なしでも共有できます。`;
+  }
+}
+
+$btnShoukou.addEventListener('click', async () => {
+  lastRank = await Game.play();
+  $form.style.display = 'block';
+  $btnShoukou.textContent = 'もう一度焼香する';
+  document.getElementById('in-msg').focus();
+});
+
+$form.addEventListener('submit', async e => {
+  e.preventDefault();
+  const name = document.getElementById('in-name').value.trim() || '名無しの参列者';
+  const msg = document.getElementById('in-msg').value.trim();
+  if (!msg) return;
+  await Store.add({ name, msg, rank: lastRank || 'GOOD', ts: Date.now() });
+  document.getElementById('in-msg').value = '';
+  applyRemote(); renderStatus();
+  SFX.kane();
+});
+
+document.getElementById('btn-reload').addEventListener('click', async () => {
+  try { await Store.load(); } catch(e){}
+  applyRemote();
+});
+
+/* ===================== 遺影の奉納 ===================== */
+async function fileToDataUrl(file, max){
+  const bmp = await createImageBitmap(file);
+  const MAX = max || 260; // 保存容量を抑えるため縮小
+  const sc = Math.min(1, MAX / Math.max(bmp.width, bmp.height));
+  const w = Math.max(1, Math.round(bmp.width * sc));
+  const h = Math.max(1, Math.round(bmp.height * sc));
+  const cv = document.createElement('canvas');
+  cv.width = w; cv.height = h;
+  cv.getContext('2d').drawImage(bmp, 0, 0, w, h);
+  return cv.toDataURL('image/jpeg', .82);
+}
+document.getElementById('btn-portrait').addEventListener('click', async () => {
+  const $ps = document.getElementById('p-status');
+  const file = document.getElementById('p-file').files[0];
+  const year = parseInt(document.getElementById('p-year').value, 10) || new Date().getFullYear();
+  if (!file) { $ps.className = 'statusline err'; $ps.textContent = '写真を選んでください。'; return; }
+  if (!requireAdmin()) {
+    $ps.className = 'statusline err';
+    $ps.textContent = '合言葉が違います。あなたは本人ではないようです。';
+    return;
+  }
+  try {
+    const dataUrl = await fileToDataUrl(file);
+    await Store.addPortrait({ year, dataUrl, ts: Date.now() });
+    applyRemote();
+    SFX.kane();
+    $ps.className = 'statusline';
+    $ps.textContent = Store.mode === 'memory'
+      ? `${year}年の遺影を奉納しました(※外部ストレージ未接続のため、このブラウザ内のみ)`
+      : `${year}年の遺影を奉納しました。祭壇に飾られています。`;
+  } catch(e) {
+    $ps.className = 'statusline err';
+    $ps.textContent = '奉納に失敗しました: ' + e.message;
+  }
+});
+
+/* ===================== アーカイブ ===================== */
+function sortedPortraits(){
+  return Store.portraits.slice().sort((a,b)=>(b.year-a.year)||((b.ts||0)-(a.ts||0)));
+}
+function renderArchive(){
+  const box = document.getElementById('videos');
+  const photoCards = sortedPortraits().map(p => `
+    <div class="vcard">
+      <div class="year">${esc(String(p.year))}年</div>
+      <div>遺影</div>
+      <img src="${p.dataUrl}" alt="${esc(String(p.year))}年の遺影"
+           style="width:100%;margin-top:6px;border:2px solid var(--dgrey);image-rendering:auto;">
+    </div>`).join('');
+  const videoCards = CONFIG.VIDEOS.map(v => `
+    <div class="vcard">
+      <div class="year">${esc(String(v.year))}年</div>
+      <div>${esc(v.title || '')}</div>
+      ${v.url
+        ? `<div><a href="${esc(v.url)}" target="_blank" rel="noopener">▶ 動画を見る</a></div>`
+        : `<div class="none">(未収録 — 本人がまだ元気なため)</div>`}
+    </div>`).join('');
+  box.innerHTML = photoCards + videoCards;
+  const cnt = document.getElementById('al-count');
+  if (cnt) cnt.textContent =
+    `収蔵: 遺影${Store.portraits.length}枚・写真${Store.photos.length}枚・ことば${Store.texts.length}件・動画${CONFIG.VIDEOS.filter(v=>v.url).length}本`;
+}
+function applyRemote(){
+  renderList();
+  renderArchive();
+  renderKenka();
+  renderAdmin();
+  Scene.setOfferings(Store.offerings);
+  const lp = sortedPortraits()[0];
+  if (lp) setPortrait(lp.dataUrl);
+}
+
+/* ===================== 献花 ===================== */
+function renderKenka(){
+  const el = document.getElementById('kenka-names');
+  const os = Store.offerings;
+  const GN = { matsu: '松', take: '竹', ume: '梅' };
+  el.textContent = os.length
+    ? '献花芳名録: ' + os.map(o => `${o.name || '名無しの参列者'}(${GN[o.grade] || '梅'})`).join('、')
+    : '';
+}
+let gradeSel = 'ume';
+document.querySelectorAll('.grade-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    gradeSel = btn.dataset.g;
+    document.querySelectorAll('.grade-btn').forEach(x => x.classList.toggle('on', x === btn));
+  });
+});
+document.getElementById('btn-kenka').addEventListener('click', async () => {
+  const $ks = document.getElementById('k-status');
+  const name = document.getElementById('k-name').value.trim() || '名無しの参列者';
+  const GNAME = { matsu: '松', take: '竹', ume: '梅' };
+  await Store.addOffering({ name, grade: gradeSel, ts: Date.now() });
+  applyRemote();
+  SFX.kane(1.2);
+  $ks.className = 'statusline';
+  $ks.textContent = Store.mode === 'memory'
+    ? `${name} さんの${GNAME[gradeSel]}を供えました(※外部ストレージ未接続のため、このブラウザ内のみ)`
+    : `${name} さんの${GNAME[gradeSel]}を供えました。`;
+  document.getElementById('k-name').value = '';
+});
+
+/* ===================== アルバム奉納 ===================== */
+document.getElementById('btn-album').addEventListener('click', async () => {
+  const $s = document.getElementById('al-status');
+  const files = [...document.getElementById('al-file').files];
+  const text = document.getElementById('al-text').value.trim();
+  if (!files.length && !text){
+    $s.className = 'statusline err';
+    $s.textContent = '写真かことばのどちらかをどうぞ。';
+    return;
+  }
+  if (!requireAdmin()) {
+    $s.className = 'statusline err';
+    $s.textContent = '合言葉が違います。あなたは本人ではないようです。';
+    return;
+  }
+  try {
+    for (const f of files) {
+      const d = await fileToDataUrl(f, 480);
+      await Store.addPhoto({ dataUrl: d, ts: Date.now() });
+    }
+    if (text) await Store.addText({ text, ts: Date.now() });
+    applyRemote();
+    SFX.kane();
+    $s.className = 'statusline';
+    $s.textContent = `納めました(写真${files.length}枚${text ? '・ことば1件' : ''})`
+      + (Store.mode === 'memory' ? '(※外部ストレージ未接続のため、このブラウザ内のみ)' : '');
+    document.getElementById('al-file').value = '';
+    document.getElementById('al-text').value = '';
+  } catch(e) {
+    $s.className = 'statusline err';
+    $s.textContent = '奉納に失敗しました: ' + e.message;
+  }
+});
+
+/* ===================== 管理ダッシュボード ===================== */
+let adminOn = false;
+function requireAdmin(){
+  if (adminOn) return true;
+  if (!CONFIG.ADMIN_KEY) { adminOn = true; return true; }
+  const k = prompt('合言葉を入力してください(本人確認)');
+  if (k === CONFIG.ADMIN_KEY) { adminOn = true; unlockAdmin(); return true; }
+  return false;
+}
+function unlockAdmin(){
+  const box = document.getElementById('admin-box');
+  box.style.display = 'block';
+  renderAdmin();
+  box.scrollIntoView({ behavior: 'smooth' });
+}
+function renderAdmin(){
+  if (!adminOn) return;
+  const GN = { matsu: '松', take: '竹', ume: '梅' };
+  document.getElementById('adm-stats').textContent =
+    `保存先: ${Store.mode === 'memory' ? 'このブラウザ内のみ' : `クラウド [${Store.mode}:${Store.binId}]`}` +
+    ` / 弔辞${Store.comments.length}件・献花${Store.offerings.length}件・遺影${Store.portraits.length}枚・写真${Store.photos.length}枚・ことば${Store.texts.length}件`;
+  document.getElementById('adm-comments').innerHTML =
+    Store.comments.map((c,i) =>
+      `<li>▶ ${esc(c.name||'')}「${esc((c.msg||'').slice(0,40))}」
+        <button type="button" data-del-c="${i}" style="font-size:10px;padding:2px 6px;">削除</button></li>`
+    ).join('') || '<li style="color:var(--dgrey)">弔辞はまだありません</li>';
+  document.getElementById('adm-offerings').innerHTML =
+    Store.offerings.map((o,i) =>
+      `<li>❀ ${esc(o.name||'')}(${GN[o.grade]||'梅'})
+        <button type="button" data-del-o="${i}" style="font-size:10px;padding:2px 6px;">削除</button></li>`
+    ).join('') || '<li style="color:var(--dgrey)">献花はまだありません</li>';
+}
+document.getElementById('btn-admin').addEventListener('click', () => {
+  if (requireAdmin()) unlockAdmin();
+});
+document.getElementById('admin-box').addEventListener('click', async e => {
+  const dc = e.target.dataset ? e.target.dataset.delC : undefined;
+  const doff = e.target.dataset ? e.target.dataset.delO : undefined;
+  if (dc !== undefined) { await Store.removeAt('comments', +dc); applyRemote(); }
+  else if (doff !== undefined) { await Store.removeAt('offerings', +doff); applyRemote(); }
+});
+
+/* ===================== 日記 (GitHub) ===================== */
+const Diary = (() => {
+  let entries = [];
+  const g = () => CONFIG.GITHUB || {};
+  const configured = () => !!(g().owner && g().repo);
+
+  async function init(){
+    if (configured()){
+      try {
+        const r = await fetch(
+          `https://api.github.com/repos/${g().owner}/${g().repo}/contents/${g().diaryDir || 'diary'}?ref=${g().branch || 'main'}`);
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        const list = await r.json();
+        entries = (Array.isArray(list) ? list : [])
+          .filter(f => /\.(md|txt)$/i.test(f.name))
+          .map(f => ({ name: f.name, date: f.name.replace(/\.(md|txt)$/i,''), url: f.download_url, text: null }))
+          .sort((a,b) => a.date < b.date ? 1 : -1);
+      } catch(e){ entries = []; }
+    }
+    renderBox();
+  }
+  async function getText(e){
+    if (e.text == null){
+      const r = await fetch(e.url);
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      e.text = await r.text();
+    }
+    return e.text;
+  }
+  function renderBox(){
+    const ul = document.getElementById('diary-list');
+    const st = document.getElementById('diary-status');
+    if (!configured()){
+      ul.innerHTML = '';
+      st.textContent = '未接続: CONFIG.GITHUB に owner / repo を設定すると、リポジトリの diary/ フォルダの日記がここに並びます。';
+      return;
+    }
+    if (!entries.length){
+      ul.innerHTML = '';
+      st.textContent = '日記はまだありません。リポジトリの diary/ に「2026-08-01.md」のようなファイルを置くと並びます。';
+      return;
+    }
+    st.textContent = `${entries.length}日ぶんの日記があります。日付を押すと読めます。`;
+    ul.innerHTML = entries.map((e,i) =>
+      `<li data-diary="${i}" style="cursor:pointer;">📖 ${esc(e.date)}</li>`).join('');
+  }
+  document.getElementById('diary-list').addEventListener('click', async ev => {
+    const li = ev.target.closest('[data-diary]');
+    if (!li) return;
+    const e = entries[+li.dataset.diary];
+    const body = document.getElementById('diary-body');
+    document.getElementById('diary-date').textContent = e.date;
+    body.textContent = '読み込み中…';
+    document.getElementById('diary-overlay').classList.add('show');
+    try { body.textContent = await getText(e); }
+    catch(err){ body.textContent = '読み込めませんでした: ' + err.message; }
+  });
+  document.getElementById('diary-close').addEventListener('click', () =>
+    document.getElementById('diary-overlay').classList.remove('show'));
+
+  async function slides(){
+    const out = [];
+    await Promise.all(entries.slice(0,5).map(async e => {
+      try {
+        const t = (await getText(e)).trim();
+        out.push({
+          type: 'text',
+          text: t.length > 180 ? t.slice(0,180) + '…' : t,
+          label: `日記 ${e.date}`,
+          ts: Date.parse(e.date) || 0
+        });
+      } catch(err){}
+    }));
+    return out;
+  }
+  return { init, slides };
+})();
+
+/* ===================== 上映会(スライドショー) ===================== */
+const Show = (() => {
+  const overlay = document.getElementById('show-overlay');
+  const body = document.getElementById('show-body');
+  const label = document.getElementById('show-label');
+  let slides = [], idx = 0, auto = true, timer = null, typeTimer = null;
+
+  function ytEmbed(url){
+    const m = String(url).match(/(?:youtu\.be\/|[?&]v=|shorts\/|embed\/)([\w-]{6,})/);
+    return m ? 'https://www.youtube.com/embed/' + m[1] : null;
+  }
+  function buildSlides(){
+    const s = [];
+    Store.portraits.forEach(p => s.push({ type:'photo', src:p.dataUrl, label:`${p.year}年の遺影`, ts:p.ts||0 }));
+    Store.photos.forEach(p => s.push({ type:'photo', src:p.dataUrl, label:'思い出の写真', ts:p.ts||0 }));
+    Store.texts.forEach(t => s.push({ type:'text', text:t.text, label:'本人のことば', ts:t.ts||0 }));
+    CONFIG.VIDEOS.filter(v => v.url).forEach(v =>
+      s.push({ type:'video', url:v.url, label:`${v.year}年 ${v.title||''}`, ts:+new Date(v.year,0,1) }));
+    return s;
+  }
+  function clearTimers(){ clearTimeout(timer); clearInterval(typeTimer); timer = null; typeTimer = null; }
+  function schedule(ms){ if (auto) timer = setTimeout(() => step(1), ms); }
+  function render(){
+    clearTimers();
+    const sl = slides[idx];
+    label.textContent = `${idx+1} / ${slides.length} — ${sl.label}`;
+    body.innerHTML = '';
+    if (sl.type === 'photo'){
+      const img = document.createElement('img');
+      img.src = sl.src;
+      body.appendChild(img);
+      schedule(4500);
+    } else if (sl.type === 'text'){
+      const el = document.createElement('div');
+      el.className = 'show-text';
+      body.appendChild(el);
+      let i = 0;
+      typeTimer = setInterval(() => {
+        el.textContent = sl.text.slice(0, ++i);
+        if (i >= sl.text.length) clearInterval(typeTimer);
+      }, 55);
+      schedule(sl.text.length * 55 + 3200);
+    } else {
+      const em = ytEmbed(sl.url);
+      if (em){
+        const f = document.createElement('iframe');
+        f.src = em;
+        f.allow = 'autoplay; encrypted-media; picture-in-picture';
+        f.allowFullscreen = true;
+        body.appendChild(f);
+      } else {
+        const v = document.createElement('video');
+        v.src = sl.url; v.controls = true; v.autoplay = true;
+        body.appendChild(v);
+      }
+      schedule(20000);
+    }
+  }
+  function step(d){ idx = (idx + d + slides.length) % slides.length; render(); }
+  async function open(){
+    slides = buildSlides();
+    try { slides = slides.concat(await Diary.slides()); } catch(e){}
+    slides.sort((a,b) => (a.ts||0) - (b.ts||0));
+    if (!slides.length) slides.push({
+      type:'text',
+      text:'まだ何も納められていません。\n本人がこれから生きて増やしていきます。',
+      label:'お知らせ', ts:0
+    });
+    idx = 0;
+    overlay.classList.add('show');
+    render();
+  }
+  function close(){ clearTimers(); overlay.classList.remove('show'); body.innerHTML = ''; }
+  document.getElementById('show-open').addEventListener('click', open);
+  document.getElementById('show-close').addEventListener('click', close);
+  document.getElementById('show-prev').addEventListener('click', () => step(-1));
+  document.getElementById('show-next').addEventListener('click', () => step(1));
+  document.getElementById('show-auto').addEventListener('click', () => {
+    auto = !auto;
+    document.getElementById('show-auto').textContent = auto ? '自動再生 ON' : '自動再生 OFF';
+    clearTimeout(timer);
+    if (auto) render();
+  });
+  return { open, close };
+})();
+
+/* ===================== 起動 ===================== */
+(async function main(){
+  document.getElementById('p-year').value = new Date().getFullYear();
+  Diary.init();
+  await Store.init();
+  try { await Store.load(); } catch(e){}
+  applyRemote();
+  renderStatus();
+  // クラウド接続時は60秒ごとに新着(弔辞・遺影)を取得
+  if (Store.mode !== 'memory') {
+    setInterval(async () => { try { await Store.load(); applyRemote(); } catch(e){} }, 60000);
+  }
+})();
+</script>
+</body>
+</html>
